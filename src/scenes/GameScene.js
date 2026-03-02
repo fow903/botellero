@@ -63,8 +63,7 @@ export default class GameScene extends Phaser.Scene {
       this.player.play(playerCfg.runAnimKey);
     }
 
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-    this.cameras.main.setBounds(0, 0, 100000, GAME.height);
+    this.cameras.main.setScroll(0, 0);
     this.physics.world.setBounds(0, 0, 100000, GAME.height);
 
     this.healthSystem.start();
@@ -101,10 +100,6 @@ export default class GameScene extends Phaser.Scene {
     if (this.healthSystem.current <= 0) return;
     this.player.x = PLAYER.startX;
     this.player.body.velocity.x = 0;
-    if (this.player.body.blocked.down || this.player.body.touching.down) {
-      this.player.y = this.groundY;
-      this.player.body.velocity.y = 0;
-    }
     if (this.cursors.space.isDown || this.cursors.up.isDown) this.jump();
     this.healthSystem.update(time);
     this.levelSystem.update(delta);

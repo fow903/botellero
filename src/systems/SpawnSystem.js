@@ -46,8 +46,9 @@ export default class SpawnSystem {
     const cfg = ITEMS.beer;
     const x = this.scene.cameras.main.scrollX + GAME.width + 60;
     const y = Phaser.Math.Between(GAME.height * 0.3, GAME.height - 24);
+    const beerScale = cfg.scale ?? GAME.itemScale ?? 0.35;
     const sprite = this.scene.physics.add.sprite(x, y, cfg.spriteKey)
-      .setScale(GAME.itemScale ?? 0.35)
+      .setScale(beerScale)
       .setSize(6, 6)
       .setOffset(0, 0);
     sprite.body.setAllowGravity(false);

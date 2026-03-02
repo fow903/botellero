@@ -37,6 +37,7 @@ export const HEALTH = {
 export const ITEMS = {
   beer: {
     spriteKey: 'beer',
+    scale: 0.14,
     healAmount: 10,
     spawnIntervalMin: 3000,
     spawnIntervalMax: 6000,
