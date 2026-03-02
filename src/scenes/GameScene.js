@@ -4,6 +4,7 @@ import {
   PLAYER,
   SCROLL,
   EVENTS,
+  ASSETS,
 } from '../config.js';
 import HealthSystem from '../systems/HealthSystem.js';
 import SpawnSystem from '../systems/SpawnSystem.js';
@@ -20,10 +21,9 @@ export default class GameScene extends Phaser.Scene {
     this.healthSystem = new HealthSystem(this);
     this.levelSystem = new LevelSystem(this);
     this.audioSystem = new AudioSystem(this);
-    this.parallaxSystem = new ParallaxSystem(
-      this,
-      (this.levelSystem.getCurrentSection().backgroundKeys) || ['bg0', 'bg1', 'bg2']
-    );
+    const sectionKeys = this.levelSystem.getCurrentSection().backgroundKeys || ['bg0', 'bg1'];
+    const bgConfigs = sectionKeys.map(k => ASSETS.backgrounds.find(b => b.key === k) || { key: k });
+    this.parallaxSystem = new ParallaxSystem(this, bgConfigs);
     this.spawnSystem = new SpawnSystem(this, this.healthSystem, this.levelSystem);
 
     this.parallaxSystem.create();

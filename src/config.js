@@ -3,8 +3,8 @@
  */
 
 export const GAME = {
-  width: 400,
-  height: 224,
+  width: 600,
+  height: 300,
   pixelScale: 4,
   itemScale: 0.35,
   backgroundColor: '#1a1a2e',
@@ -85,9 +85,8 @@ export const ASSETS = {
     fridges: { key: 'fridges', path: 'sprites/fridges.png' },
   },
   backgrounds: [
-    { key: 'bg0', path: 'backgrounds/bg0.png', parallaxFactor: 0.2 },
-    { key: 'bg1', path: 'backgrounds/bg1.png', parallaxFactor: 0.4 },
-    { key: 'bg2', path: 'backgrounds/bg2.png', parallaxFactor: 0.7 },
+    { key: 'bg0', path: 'backgrounds/bg0.png', parallaxFactor: 0, static: true },
+    { key: 'bg1', path: 'backgrounds/bg1.png', parallaxFactor: 0.15, yPercent: 0, heightPercent: 0.27, tileScaleX: 0.35, tileScaleY: 0.5 },
   ],
   audio: {
     section0: { key: 'music0', path: 'audio/section0.mp3' },
@@ -97,9 +96,9 @@ export const ASSETS = {
 };
 
 export const LEVEL_SECTIONS = [
-  { distance: 0, musicKey: 'music0', backgroundKeys: ['bg0', 'bg1', 'bg2'], spawnRateMultiplier: 1 },
-  { distance: 1500, musicKey: 'music1', backgroundKeys: ['bg0', 'bg1', 'bg2'], spawnRateMultiplier: 1.2 },
-  { distance: 3500, musicKey: 'music2', backgroundKeys: ['bg0', 'bg1', 'bg2'], spawnRateMultiplier: 1.4 },
+  { distance: 0, musicKey: 'music0', backgroundKeys: ['bg0', 'bg1'], spawnRateMultiplier: 1 },
+  { distance: 1500, musicKey: 'music1', backgroundKeys: ['bg0', 'bg1'], spawnRateMultiplier: 1.2 },
+  { distance: 3500, musicKey: 'music2', backgroundKeys: ['bg0', 'bg1'], spawnRateMultiplier: 1.4 },
 ];
 
 export const EVENTS = {

@@ -64,15 +64,9 @@ export default class BootScene extends Phaser.Scene {
     g8.generateTexture('fridges', size, size * 2);
     g8.destroy();
 
-    const w = GAME.width * 2;
-    const h = GAME.height;
-    ['bg0', 'bg1', 'bg2'].forEach((key, i) => {
-      const bg = this.make.graphics({ x: 0, y: 0, add: false });
-      const shade = 30 + i * 40;
-      bg.fillStyle(Phaser.Display.Color.GetColor(shade, shade, shade + 20), 1);
-      bg.fillRect(0, 0, w, h);
-      bg.generateTexture(key, w, h);
-      bg.destroy();
+    ASSETS.backgrounds.forEach(({ key, path }) => {
+      const url = new URL('../' + path, import.meta.url).href;
+      this.load.image(key, url);
     });
   }
 
