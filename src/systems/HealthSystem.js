@@ -23,10 +23,9 @@ export default class HealthSystem {
 
   update(time) {
     if (this.current <= 0) return;
-    if (time < this.buffActiveUntil) return;
-    if (time < this.lastDecayTime) return;
-    const elapsed = (time - this.lastDecayTime) / 1000;
+    const elapsed = Math.min((time - this.lastDecayTime) / 1000, 0.1);
     this.lastDecayTime = time;
+    if (time < this.buffActiveUntil) return;
     this.add(-this.decayPerSec * elapsed);
   }
 
