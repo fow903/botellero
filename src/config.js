@@ -39,8 +39,8 @@ export const ITEMS = {
     spriteKey: 'beer',
     scale: 0.14,
     healAmount: 10,
-    spawnIntervalMin: 3000,
-    spawnIntervalMax: 6000,
+    spawnIntervalMin: 1200,
+    spawnIntervalMax: 2500,
   },
   musicKey: {
     spriteKey: 'musicKey',

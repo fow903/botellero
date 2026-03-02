@@ -48,12 +48,10 @@ export default class SpawnSystem {
     const y = Phaser.Math.Between(GAME.height * 0.3, GAME.height - 24);
     const beerScale = cfg.scale ?? GAME.itemScale ?? 0.35;
     const sprite = this.scene.physics.add.sprite(x, y, cfg.spriteKey)
-      .setScale(beerScale)
-      .setSize(6, 6)
-      .setOffset(0, 0);
+      .setScale(beerScale);
     sprite.body.setAllowGravity(false);
     sprite.body.setVelocity(0, 0);
-    this.scene.physics.add.collider(this.scene.player, sprite, () => {
+    this.scene.physics.add.overlap(this.scene.player, sprite, () => {
       this.health.heal(cfg.healAmount);
       sprite.destroy();
     });
@@ -76,12 +74,10 @@ export default class SpawnSystem {
     const x = this.scene.cameras.main.scrollX + GAME.width + 60;
     const y = Phaser.Math.Between(GAME.height * 0.2, GAME.height - 24);
     const sprite = this.scene.physics.add.sprite(x, y, cfg.spriteKey)
-      .setScale(GAME.itemScale ?? 0.35)
-      .setSize(6, 6)
-      .setOffset(0, 0);
+      .setScale(GAME.itemScale ?? 0.35);
     sprite.body.setAllowGravity(false);
     sprite.body.setVelocity(0, 0);
-    this.scene.physics.add.collider(this.scene.player, sprite, () => {
+    this.scene.physics.add.overlap(this.scene.player, sprite, () => {
       this.health.startBuff(cfg.buffDurationMs);
       sprite.destroy();
     });
