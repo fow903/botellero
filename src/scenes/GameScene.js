@@ -43,13 +43,13 @@ export default class GameScene extends Phaser.Scene {
     const frameW = playerCfg ? playerCfg.frameWidth : 6;
     const frameH = playerCfg ? playerCfg.frameHeight : 6;
     const playerScale = playerCfg ? Math.min(1, (GAME.height * 0.45) / frameH) : GAME.pixelScale;
-    const playerY = groundY;
+    const playerY = groundY - 16;
     this.player = this.physics.add.sprite(PLAYER.startX, playerY, PLAYER.spriteKey)
       .setScale(playerScale)
       .setOrigin(0.5, 1);
     if (playerCfg) {
       const bodyW = frameW * 0.4;
-      const bodyH = frameH * 0.65;
+      const bodyH = frameH * 0.9;
       this.player.setSize(bodyW, bodyH);
       this.player.setOffset((frameW - bodyW) / 2, frameH - bodyH);
     } else {

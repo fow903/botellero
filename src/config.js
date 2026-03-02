@@ -86,7 +86,7 @@ export const ASSETS = {
   },
   backgrounds: [
     { key: 'bg0', path: 'backgrounds/bg0.png', parallaxFactor: 0, static: true },
-    { key: 'bg1', path: 'backgrounds/bg1.png', parallaxFactor: 0.15, yPercent: 0, heightPercent: 0.27, tileScaleX: 0.35, tileScaleY: 0.5 },
+    { key: 'bg1', path: 'backgrounds/bg1.png', parallaxFactor: 0.15, yPercent: 0, heightPercent: 0.268, tileScaleX: 0.35, tileScaleY: 1 },
   ],
   audio: {
     section0: { key: 'music0', path: 'audio/section0.mp3' },
