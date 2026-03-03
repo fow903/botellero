@@ -6,12 +6,16 @@ export default class BootScene extends Phaser.Scene {
     super({ key: 'Boot' });
   }
 
+  // Carga todos los assets antes de que empiece el juego.
+  // Si un sprite real existe en disco se carga desde archivo;
+  // si no, se genera un rectángulo de color como placeholder.
   preload() {
+    // Jugador: carga spritesheet desde archivo si está configurado, o genera placeholder verde
     const playerCfg = PLAYER.spriteSheet;
     if (playerCfg && playerCfg.path) {
       const playerUrl = new URL('../' + playerCfg.path, import.meta.url).href;
       this.load.spritesheet('player', playerUrl, {
-        frameWidth: playerCfg.frameWidth,
+        frameWidth:  playerCfg.frameWidth,
         frameHeight: playerCfg.frameHeight,
       });
     } else {
@@ -23,9 +27,11 @@ export default class BootScene extends Phaser.Scene {
       g.destroy();
     }
 
+    // Cerveza: carga la imagen real desde sprites/beer.png
     const beerUrl = new URL('../' + ASSETS.sprites.beer.path, import.meta.url).href;
     this.load.image(ASSETS.sprites.beer.key, beerUrl);
 
+    // Resto de sprites sin archivo: se generan como rectángulos de colores
     const size = 6 * GAME.pixelScale;
 
     const g3 = this.make.graphics({ x: 0, y: 0, add: false });
@@ -64,21 +70,24 @@ export default class BootScene extends Phaser.Scene {
     g8.generateTexture('fridges', size, size * 2);
     g8.destroy();
 
+    // Fondos: carga todas las imágenes definidas en ASSETS.backgrounds
     ASSETS.backgrounds.forEach(({ key, path }) => {
       const url = new URL('../' + path, import.meta.url).href;
       this.load.image(key, url);
     });
   }
 
+  // Una vez cargados los assets, crea la animación de correr del jugador
+  // y avanza a la escena Preload (que a su vez arranca Game).
   create() {
     const playerCfg = PLAYER.spriteSheet;
     if (playerCfg && this.anims.get(playerCfg.runAnimKey) === undefined) {
       const end = (playerCfg.totalFrames != null) ? playerCfg.totalFrames - 1 : 41;
       this.anims.create({
-        key: playerCfg.runAnimKey,
-        frames: this.anims.generateFrameNumbers('player', { start: 0, end }),
+        key:       playerCfg.runAnimKey,
+        frames:    this.anims.generateFrameNumbers('player', { start: 0, end }),
         frameRate: playerCfg.runFrameRate || 18,
-        repeat: -1,
+        repeat:    -1,
       });
     }
     this.scene.start('Preload');

@@ -17,18 +17,23 @@ export default class GameScene extends Phaser.Scene {
     super({ key: 'Game' });
   }
 
+  // Construye toda la escena: fondos, suelo, jugador, sistemas y controles.
+  // Se ejecuta una sola vez al iniciar o reiniciar la partida.
   create() {
     this.healthSystem = new HealthSystem(this);
-    this.levelSystem = new LevelSystem(this);
-    this.audioSystem = new AudioSystem(this);
+    this.levelSystem  = new LevelSystem(this);
+    this.audioSystem  = new AudioSystem(this);
+
+    // Resuelve los keys de fondo de la sección actual contra los configs completos de ASSETS
     const sectionKeys = this.levelSystem.getCurrentSection().backgroundKeys || ['bg0', 'bg1'];
-    const bgConfigs = sectionKeys.map(k => ASSETS.backgrounds.find(b => b.key === k) || { key: k });
+    const bgConfigs   = sectionKeys.map(k => ASSETS.backgrounds.find(b => b.key === k) || { key: k });
     this.parallaxSystem = new ParallaxSystem(this, bgConfigs);
-    this.spawnSystem = new SpawnSystem(this, this.healthSystem, this.levelSystem);
+    this.spawnSystem    = new SpawnSystem(this, this.healthSystem, this.levelSystem);
 
     this.parallaxSystem.create();
     this.parallaxSystem.setScrollSpeed(SCROLL.speed);
 
+    // Suelo estático: tile visual con cuerpo físico inmovible
     const groundY = GAME.height - 8;
     const ground = this.add.tileSprite(0, groundY, GAME.width * 4, 16, 'bg0')
       .setOrigin(0, 1)
@@ -36,17 +41,21 @@ export default class GameScene extends Phaser.Scene {
       .setScrollFactor(0);
     this.physics.add.existing(ground, true);
     ground.body.setSize(GAME.width * 4, 16).setOffset(0, 0);
-    this.ground = ground;
+    this.ground  = ground;
     this.groundY = groundY;
 
-    const playerCfg = PLAYER.spriteSheet;
-    const frameW = playerCfg ? playerCfg.frameWidth : 6;
-    const frameH = playerCfg ? playerCfg.frameHeight : 6;
+    // Jugador: escala calculada para ocupar ~45% de la altura de pantalla
+    const playerCfg   = PLAYER.spriteSheet;
+    const frameW      = playerCfg ? playerCfg.frameWidth  : 6;
+    const frameH      = playerCfg ? playerCfg.frameHeight : 6;
     const playerScale = playerCfg ? Math.min(1, (GAME.height * 0.45) / frameH) : GAME.pixelScale;
+    // Inicia justo sobre la superficie del suelo (groundY - 16 = tope del tile de suelo)
     const playerY = groundY - 16;
     this.player = this.physics.add.sprite(PLAYER.startX, playerY, PLAYER.spriteKey)
       .setScale(playerScale)
       .setOrigin(0.5, 1);
+
+    // Ajusta el cuerpo físico para que sea más estrecho y alto que el frame completo
     if (playerCfg) {
       const bodyW = frameW * 0.4;
       const bodyH = frameH * 0.9;
@@ -55,14 +64,17 @@ export default class GameScene extends Phaser.Scene {
     } else {
       this.player.setSize(6, 6).setOffset(0, 0);
     }
+
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, ground);
     this.player.body.setAllowGravity(true);
     this.player.body.setGravityY(PLAYER.gravity);
+
     if (playerCfg && playerCfg.runAnimKey) {
       this.player.play(playerCfg.runAnimKey);
     }
 
+    // Cámara fija (el scroll se simula moviendo los objetos, no la cámara)
     this.cameras.main.setScroll(0, 0);
     this.physics.world.setBounds(0, 0, 100000, GAME.height);
 
@@ -70,9 +82,14 @@ export default class GameScene extends Phaser.Scene {
     this.levelSystem.start();
     this.spawnSystem.create();
 
-    this.cursors = this.input.keyboard.addKeys({ space: Phaser.Input.Keyboard.KeyCodes.SPACE, up: Phaser.Input.Keyboard.KeyCodes.UP });
+    // Teclas de salto: espacio, flecha arriba o toque en pantalla
+    this.cursors = this.input.keyboard.addKeys({
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      up:    Phaser.Input.Keyboard.KeyCodes.UP,
+    });
     this.input.on('pointerdown', () => this.jump());
 
+    // Cuando cambia la sección del nivel, cambia la música
     this.events.on(EVENTS.SECTION_CHANGED, (section) => {
       this.audioSystem.playSectionMusic(section);
     });
@@ -81,26 +98,37 @@ export default class GameScene extends Phaser.Scene {
     const firstSection = this.levelSystem.getCurrentSection();
     this.audioSystem.playSectionMusic(firstSection);
 
+    // Lanza la UI como escena paralela pasándole la referencia del sistema de vida
     this.scene.launch('UI', { healthSystem: this.healthSystem });
   }
 
+  // Hace saltar al jugador si está sobre el suelo.
+  // Verifica bloqueado por abajo o si la velocidad y posición indican contacto.
   jump() {
     const body = this.player.body;
-    const onGround = body.blocked.down || body.touching.down || (body.velocity.y >= -50 && this.player.y >= this.ground.y - 5);
+    const onGround = body.blocked.down || body.touching.down ||
+      (body.velocity.y >= -50 && this.player.y >= this.ground.y - 5);
     if (!onGround) return;
     this.player.setVelocityY(PLAYER.jumpForce);
   }
 
+  // Pausa la física y le indica a la UI que muestre la pantalla de Game Over
   onGameOver() {
     this.physics.pause();
     this.scene.get('UI').events.emit('show_game_over');
   }
 
+  // Loop principal: se ejecuta cada frame mientras el jugador tenga vida.
+  // Fija el X del jugador (auto-runner), procesa entrada y actualiza todos los sistemas.
   update(time, delta) {
     if (this.healthSystem.current <= 0) return;
+
+    // Mantiene al jugador fijo en X — el mundo se mueve, no el personaje
     this.player.x = PLAYER.startX;
     this.player.body.velocity.x = 0;
+
     if (this.cursors.space.isDown || this.cursors.up.isDown) this.jump();
+
     this.healthSystem.update(time);
     this.levelSystem.update(delta);
     this.parallaxSystem.update(delta, SCROLL.speed);
